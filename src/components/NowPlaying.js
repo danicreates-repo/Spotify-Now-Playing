@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './NowPlaying.css';
 import axios from 'axios';
 
-const POLLING_INTERVAL = 10000; // 10 seconds
+const ACTIVE_POLLING_INTERVAL = 10000;  // 10 seconds for when music is playing
+const INACTIVE_POLLING_INTERVAL = 60000; // 60 seconds for when music is paused or stopped
 
 function NowPlaying() {
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -10,7 +11,7 @@ function NowPlaying() {
   const [error, setError] = useState(null);
   const [displayProgressMs, setDisplayProgressMs] = useState(0);
 
-  const pollIntervalRef = useRef();
+  const pollTimeoutRef = useRef();
   const progressIntervalRef = useRef();
 
   const fetchCurrentTrack = useCallback(async () => {
@@ -18,17 +19,19 @@ function NowPlaying() {
       setError(null);
       const { data } = await axios.get('/api/now-playing');
 
-      if (data && data.item) {
+      if (data && data.is_playing) {
         setCurrentTrack(data);
         setDisplayProgressMs(data.progress_ms);
+        return ACTIVE_POLLING_INTERVAL; // Use fast polling
       } else {
         setCurrentTrack(null);
+        return INACTIVE_POLLING_INTERVAL; // Use slow polling
       }
 
     } catch (error) {
       console.error('Error fetching from backend:', error);
       setError('Failed to fetch from server. Is it running?');
-      clearInterval(pollIntervalRef.current);
+      return INACTIVE_POLLING_INTERVAL; // Slow down on error
     } finally {
       if (isInitialLoading) {
         setIsInitialLoading(false);
@@ -36,11 +39,24 @@ function NowPlaying() {
     }
   }, [isInitialLoading]);
 
-  // Effect for polling the backend API
+  // Effect for polling the backend API with a dynamic timeout
   useEffect(() => {
-    fetchCurrentTrack();
-    pollIntervalRef.current = setInterval(fetchCurrentTrack, POLLING_INTERVAL);
-    return () => clearInterval(pollIntervalRef.current);
+    let isMounted = true;
+
+    const poll = async () => {
+      const nextPollDelay = await fetchCurrentTrack();
+      // Only set the next timeout if the component is still mounted
+      if (isMounted) {
+        pollTimeoutRef.current = setTimeout(poll, nextPollDelay);
+      }
+    };
+
+    poll(); // Initial fetch
+
+    return () => {
+      isMounted = false;
+      clearTimeout(pollTimeoutRef.current);
+    };
   }, [fetchCurrentTrack]);
 
   // Effect for the local progress bar timer
@@ -52,8 +68,9 @@ function NowPlaying() {
         setDisplayProgressMs(prevProgress => {
           const newProgress = prevProgress + 1000;
           if (newProgress >= currentTrack.item.duration_ms) {
-            setTimeout(fetchCurrentTrack, 1500);
+            // Song has ended. Clear this timer and proactively fetch in 1.5s
             clearInterval(progressIntervalRef.current);
+            setTimeout(fetchCurrentTrack, 1500);
             return currentTrack.item.duration_ms;
           }
           return newProgress;

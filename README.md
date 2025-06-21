@@ -1,138 +1,177 @@
 # Spotify Now Playing
 
-A beautiful React web application that displays your currently playing Spotify track in real-time. Perfect for sharing what you're listening to with friends or displaying on your website.
+A self-hosted, real-time display of your currently playing Spotify track. It features a dynamic background that changes based on album art and is designed to be embedded or displayed as a standalone page.
+
+This project uses a secure client-server architecture to protect your Spotify credentials.
+
+![Showcase](https://i.imgur.com/71w3nJ0.png)
 
 ## Features
 
-- 🎵 **Real-time Track Display**: Shows currently playing track with live progress updates
-- 🖼️ **Album Art**: Displays high-quality album cover art
-- ⏱️ **Progress Bar**: Visual progress indicator with current time and duration
-- 🎉 **Join the Party**: One-click button to open the track in your local Spotify app
-- 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
-- 🔐 **Secure Authentication**: OAuth 2.0 flow with automatic token refresh
-- 🎨 **Beautiful UI**: Modern, glassmorphism design with smooth animations
+-   🎵 **Real-time Track Display**: Shows your currently playing track with a smooth, locally-updating progress bar.
+-   🖼️ **Dynamic Album Art Background**: The page background elegantly transitions to a blurred, tinted version of the current song's album art.
+-   🔐 **Secure**: Your credentials and refresh token are kept safe on the backend and are never exposed to the client.
+-   🚀 **Efficient**: Reduces API calls by using a smart timer and only fetching new data when necessary.
+-   🎉 **"Join the Party" Button**: Allows viewers to instantly open the currently playing track in their own Spotify app.
+-   📱 **Responsive Design**: Looks great on desktop and mobile devices.
 
-## Prerequisites
+## Architecture
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Spotify account
-- Spotify Developer account
+This project consists of two parts that run concurrently:
 
-## Setup
+1.  **React Frontend** (`/src`): A modern React application that displays the "Now Playing" information. It is responsible for all UI and polls our own backend for data.
+2.  **Node.js Backend** (`server.js`): A lightweight Express server that securely handles communication with the Spotify API. It uses a long-lived Refresh Token to get your "Now Playing" data without needing to re-authenticate.
 
-### 1. Spotify App Configuration
+## Project Setup
 
-1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-2. Create a new app
-3. Add the following redirect URIs:
-   - `http://127.0.0.1:3000/callback` (for local development)
-   - `https://yourdomain.com/callback` (for production)
-4. Copy your Client ID and Client Secret
+### 1. Initial Spotify App Setup
+
+1.  Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and create a new App.
+2.  Get your **Client ID** and **Client Secret**.
+3.  Add a **Redirect URI** to your Spotify App settings. For the initial setup, this must be `http://127.0.0.1:8888/callback`.
 
 ### 2. Environment Variables
 
-Create a `.env.local` file in the root directory:
+In the project's root directory, create a file named `.env.local`. This file will hold all your secret keys.
+
+Copy the following into `.env.local`, adding your own credentials:
 
 ```env
+# Credentials from your Spotify App
 REACT_APP_SPOTIFY_CLIENT_ID=your_client_id_here
 REACT_APP_SPOTIFY_CLIENT_SECRET=your_client_secret_here
-REACT_APP_REDIRECT_URI=http://127.0.0.1:3000/callback
+
+# Leave this blank for now
+SPOTIFY_REFRESH_TOKEN=
 ```
 
-### 3. Installation
+### 3. Get Your Refresh Token
+
+The backend needs a long-lived `Refresh Token` to access your Spotify data. We'll use a one-time script to generate this.
+
+1.  Install the project dependencies:
+    ```bash
+    npm install
+    ```
+2.  Run the special refresh token script:
+    ```bash
+    node getRefreshToken.js
+    ```
+3.  Follow the instructions in your terminal. It will ask you to open a URL in your browser, log in to Spotify, and grant permission.
+4.  Once you do, your `Refresh Token` will be printed in the terminal. **Copy it**.
+5.  Open your `.env.local` file again and paste the token into the `SPOTIFY_REFRESH_TOKEN` variable.
+
+You only need to do this once. You can now remove the `http://127.0.0.1:8888/callback` URI from your Spotify App settings if you wish.
+
+## Running Locally
+
+To run the project for local development, you need to run the frontend and backend in **two separate terminals**.
+
+**Terminal 1: Start the Backend**
 
 ```bash
-# Install dependencies
-npm install
+node server.js
+```
 
-# Start development server
+**Terminal 2: Start the Frontend**
+
+```bash
 npm start
 ```
 
-The app will open at `http://127.0.0.1:3000`
+Your app will be available at `http://127.0.0.1:3000`.
 
-## Usage
+## Production Deployment (Debian/Ubuntu)
 
-1. Click "Connect to Spotify" to authenticate
-2. Grant the required permissions
-3. Start playing music on Spotify
-4. Your currently playing track will appear with live updates
-5. Click "Join the Party" to open the track in your Spotify app
+These instructions outline how to deploy the application to a production Linux server using Nginx and PM2.
 
-## API Scopes
+1.  **Prerequisites**: Ensure your server has `git`, `nodejs` (v16+), and `npm` installed.
+2.  **Clone Your Project**:
+    ```bash
+    git clone <your_repo_url>
+    cd <your_project_folder>
+    ```
+3.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+4.  **Create Production Environment File**:
+    Create a `.env.local` file on the server (`nano .env.local`) and paste in your three required variables (`REACT_APP_SPOTIFY_CLIENT_ID`, `REACT_APP_SPOTIFY_CLIENT_SECRET`, and the `SPOTIFY_REFRESH_TOKEN`).
+5.  **Build the React App**:
+    ```bash
+    npm run build
+    ```
+6.  **Install PM2 and Nginx**:
+    ```bash
+    npm install -g pm2
+    sudo apt install nginx
+    ```
+7.  **Start the Backend with PM2**:
+    ```bash
+    pm2 start server.js --name "nowplaying-backend"
+    pm2 save
+    ```
+8.  **Configure Nginx**:
+    Create a new Nginx config file: `sudo nano /etc/nginx/sites-available/your-domain.com`. Paste in the configuration below, making sure to replace `your-domain.com` and the `root` path.
 
-The app requests the following Spotify API scopes:
-- `user-read-currently-playing`: Read currently playing track
-- `user-read-playback-state`: Read playback state
-- `user-read-recently-played`: Read recently played tracks
+    ```nginx
+    server {
+        listen 80;
+        server_name your-domain.com;
 
-## Deployment
+        root /path/to/your/project/build;
+        index index.html;
 
-### Local Testing (Windows)
-```bash
-npm start
-```
+        location / {
+            try_files $uri /index.html;
+        }
 
-### Production (Debian Linux)
-```bash
-npm run build
-```
+        location /api {
+            proxy_pass http://127.0.0.1:8888;
+        }
+    }
+    ```
+9.  **Enable the Site & Secure It**:
+    ```bash
+    # Enable the site
+    sudo ln -s /etc/nginx/sites-available/your-domain.com /etc/nginx/sites-enabled/
+    
+    # Test Nginx config
+    sudo nginx -t
 
-Serve the `build` folder with your web server (nginx, Apache, etc.)
+    # Install Certbot for SSL
+    sudo apt install certbot python3-certbot-nginx
+    
+    # Get and install a certificate
+    sudo certbot --nginx -d your-domain.com
 
-### Environment Variables for Production
-Update your `.env.local` file:
-```env
-REACT_APP_SPOTIFY_CLIENT_ID=your_client_id_here
-REACT_APP_SPOTIFY_CLIENT_SECRET=your_client_secret_here
-REACT_APP_REDIRECT_URI=https://yourdomain.com/callback
-```
+    # Reload Nginx to apply all changes
+    sudo systemctl reload nginx
+    ```
+
+Your application is now live!
 
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── NowPlaying.js      # Main track display component
-│   ├── NowPlaying.css     # Component styles
-│   └── Callback.js        # OAuth callback handler
-├── services/
-│   └── spotifyService.js  # Spotify API integration
-├── App.js                 # Main app component
-├── App.css               # App styles
-├── index.js              # React entry point
-└── index.css             # Global styles
+.
+├── /build/             # Production build of the React app
+├── /node_modules/      # Dependencies
+├── /public/            # Public assets for the React app
+├── /src/               # React app source code
+│   ├── /components/
+│   │   └── NowPlaying.js
+│   ├── App.css
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
+├── .env.local          # (Crucial, must be created manually) Holds all secrets
+├── .gitignore
+├── getRefreshToken.js  # One-time script to get your Spotify Refresh Token
+├── package.json
+├── README.md
+└── server.js           # The backend Node.js/Express server
 ```
-
-## Security Notes
-
-- Client secret is stored in environment variables
-- Tokens are stored in localStorage (consider using httpOnly cookies for production)
-- All API calls are made server-side to protect credentials
-- OAuth state parameter prevents CSRF attacks
-
-## Future Enhancements
-
-- 🎨 Three.js music visualization
-- 🎤 Desktop audio capture
-- 📊 Queue sharing functionality
-- 🎵 Animated cover art support
-- 🌐 WebSocket real-time updates
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Invalid redirect URI"**: Ensure your redirect URI exactly matches what's configured in Spotify Dashboard
-2. **"No valid token available"**: Try logging out and re-authenticating
-3. **"Nothing currently playing"**: Make sure you have an active Spotify session with music playing
-
-### Development Tips
-
-- Use browser dev tools to monitor network requests
-- Check console for detailed error messages
-- Verify environment variables are loaded correctly
 
 ## License
 

@@ -1,9 +1,0 @@
-Current Environment: Windows 10 - x86 based
-
-Final Destination Evironment: Debian Linux
-
-Project Title: Spotify "Now Playing" webpage
-
-Goals: Use a SpotifyConnect API secret and appID to connect to my spotify account, and update the webpage with the currently playing track details. This will include things like the song title, artist name, album, cover art (extra points for being able to display the animated cover art meant for mobile phones and the spotify player), the playback progress bar with the current track position and total time, and a button a visitor to the page can use to "join the party" and send a URI to the user's local spotify installation to play the same song (extra points for being able to copy the queue as well so they can listen to the next songs)
-
-Extra info: Try to avoid going beyond the scope described above. The webpage should be built with simple react components. This project will be built on my Windows machine for local testing, and will finally be deployed on a Debian linux installation hosted on the "nowplaying.danii.io" subdomain. Try to ensure any API secrets/IDs used to connect to spotify connect are used as .env variables and not visible to the user inspecting the page in any way. Ensure you do not design yourself into a corner; ideally if this test build with the basic functionality goes well we will expand on this project to utilize three.js, have a way to capture the desktop sounds (using a sound input device), and have music visualization added later.
