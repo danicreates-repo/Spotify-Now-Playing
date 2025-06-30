@@ -8,7 +8,6 @@ const port = 8888;
 
 const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
-// This can be any unused port on your local machine. 8888 is common.
 const redirectUri = `http://127.0.0.1:${port}/callback`;
 
 if (!clientId || !clientSecret) {

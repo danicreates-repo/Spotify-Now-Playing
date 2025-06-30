@@ -4,7 +4,6 @@ A self-hosted, real-time display of your currently playing Spotify track. It fea
 
 This project uses a secure client-server architecture to protect your Spotify credentials.
 
-![Showcase](https://i.imgur.com/71w3nJ0.png)
 
 ## Features
 

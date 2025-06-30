@@ -127,7 +127,7 @@ function NowPlaying() {
         <div className="container">
           <div className="card">
             <h2>Nothing Currently Playing</h2>
-            <p>Start playing a track on Spotify to see it here!</p>
+            <p>Dani needs to play something first!</p>
             <button className="btn" onClick={() => window.location.reload()}>
               Refresh
             </button>
