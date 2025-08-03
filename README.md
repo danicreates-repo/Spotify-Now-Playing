@@ -12,6 +12,7 @@ This project uses a secure client-server architecture to protect your Spotify cr
 -   🔐 **Secure**: Your credentials and refresh token are kept safe on the backend and are never exposed to the client.
 -   🚀 **Efficient**: Reduces API calls by using a smart timer and only fetching new data when necessary.
 -   🎉 **"Join the Party" Button**: Allows viewers to instantly open the currently playing track in their own Spotify app.
+-   🔗 **"Open in Github" Button**: Optional footer button that links to the project's GitHub repository for easy access to the source code.
 -   📱 **Responsive Design**: Looks great on desktop and mobile devices.
 
 ## Architecture
@@ -42,7 +43,12 @@ REACT_APP_SPOTIFY_CLIENT_SECRET=your_client_secret_here
 
 # Leave this blank for now
 SPOTIFY_REFRESH_TOKEN=
+
+# Optional: GitHub repository URL for the "Open in Github" button
+REACT_APP_GITHUB_REPO_URL=https://github.com/yourusername/your-repo-name
 ```
+
+**Note**: The `REACT_APP_GITHUB_REPO_URL` is optional. If you don't set this variable, the "Open in Github" button will not appear in the footer.
 
 ### 3. Get Your Refresh Token
 

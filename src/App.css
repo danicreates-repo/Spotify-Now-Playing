@@ -5,6 +5,20 @@
   flex-direction: column;
   position: relative;
   isolation: isolate;
+  padding-bottom: 80px; /* Add space for the footer */
+}
+
+/* Responsive footer spacing */
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding-bottom: 60px;
+  }
 }
 
 .App h1 {

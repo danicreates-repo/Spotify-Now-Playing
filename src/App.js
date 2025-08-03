@@ -1,5 +1,6 @@
 import React from 'react';
 import NowPlaying from './components/NowPlaying';
+import Footer from './components/Footer';
 import './App.css';
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <div className="App">
       <div className="default-background"></div>
       <NowPlaying />
+      <Footer />
     </div>
   );
 }
