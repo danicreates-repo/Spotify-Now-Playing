@@ -9,7 +9,7 @@ const INACTIVE_POLLING_INTERVAL = 60000; // 60 seconds for when music is paused 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 
                      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
                       ? '' // Use proxy for local development
-                      : `${window.location.protocol}//${window.location.hostname}:8888`); // Auto-detect for external usage
+                      : `${window.location.protocol}//repo.danii.io:8888`); // Use repo.danii.io for external usage (covered by SSL cert)
 
 function NowPlaying() {
   const [currentTrack, setCurrentTrack] = useState(null);

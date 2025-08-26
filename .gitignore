@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Dependencies
 /node_modules
 /.pnp
@@ -150,4 +149,4 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp 
->>>>>>> 5fe17fa04e4dc0382adbcefce8d5aecaaf9eabaa
+
