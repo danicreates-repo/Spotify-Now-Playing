@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .App {
   text-align: center;
   min-height: 100vh;
@@ -89,4 +90,111 @@
   height: 100%;
   background-color: rgba(30, 60, 114, 0.6); /* Blue overlay */
   z-index: -3;
+=======
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  isolation: isolate;
+  padding-bottom: 80px; /* Add space for the footer */
+}
+
+/* Responsive footer spacing */
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding-bottom: 60px;
+  }
+}
+
+.App h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #1db954, #1ed760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.App h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.App p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #1db954;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.success-message {
+  background: rgba(29, 185, 84, 0.1);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  color: #1db954;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+/* Dynamic Album Art Background */
+.background-art {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-size: cover;
+  background-position: center center;
+  transition: opacity 1.5s ease-in-out;
+  opacity: 0;
+}
+
+.background-art.active {
+  opacity: 1;
+  filter: blur(32px);
+  transform: scale(1.1); 
+}
+
+.background-art.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 60, 114, 0.6); 
+  z-index: -3;
+>>>>>>> 5fe17fa04e4dc0382adbcefce8d5aecaaf9eabaa
 }
